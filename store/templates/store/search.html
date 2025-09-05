@@ -1,14 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Search Customer - DStore</title>
+    <title>Search Customer</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
-    <h1>🔍 Search Customer</h1>
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="cust_id" placeholder="Enter Customer ID" required>
-        <button type="submit">Search</button>
-    </form>
+    <h2>Search Customer</h2>
+<form method="POST">
+    {% csrf_token %}
+    <input type="text" name="cust_id" placeholder="Enter Customer ID">
+    <button type="submit">Search</button>
+</form>
+
+{% if message %}
+    <p style="color:red;">{{ message }}</p>
+{% endif %}
+
+{% if customer %}
+    <h3>Customer Details</h3>
+    <p><strong>ID:</strong> {{ customer.cust_id }}</p>
+    <p><strong>Name:</strong> {{ customer.name }}</p>
+    <p><strong>Email:</strong> {{ customer.email }}</p>
+    <p><strong>Mobile:</strong> {{ customer.mobile }}</p>
+    <p><strong>Address:</strong> {{ customer.address }}</p>
+{% endif %}
+
 </body>
 </html>

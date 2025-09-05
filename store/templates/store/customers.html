@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer List</title>
+</head>
+<body>
+    <h2>Customer List</h2>
+    <a href="{% url 'upload_customers' %}">Upload New Customers</a> | 
+    <a href="{% url 'search_customer' %}">Search Customer</a>
+
+    <table border="1" cellspacing="0" cellpadding="5">
+        <tr>
+            <th>Cust ID</th>
+            <th>Name</th>
+            <th>Mobile</th>
+            <th>Email</th>
+            <th>Address</th>
+        </tr>
+        {% for c in customers %}
+        <tr>
+            <td>{{ c.cust_id }}</td>
+            <td>{{ c.name }}</td>
+            <td>{{ c.mobile }}</td>
+            <td>{{ c.email }}</td>
+            <td>{{ c.address }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

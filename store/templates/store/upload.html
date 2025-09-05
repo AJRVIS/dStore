@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Customers</title>
+</head>
+<body>
+    <h2>Upload Customer Excel File</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Upload</button>
+    </form>
+    <br>
+    <a href="{% url 'customer_list' %}">View Customers</a>
+</body>
+</html>
