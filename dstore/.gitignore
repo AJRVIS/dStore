@@ -1,0 +1,44 @@
+# ====================================
+# Django Project Dt - .gitignore
+# ====================================
+
+# Python bytecode / cache
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+
+# Django database (local only)
+db.sqlite3
+
+# Django static and media
+/media/
+staticfiles/
+*.log
+
+# Environment files
+.env
+*.env
+env/
+venv/
+ENV/
+.venv/
+
+# IDE / Editor settings
+.vscode/
+.idea/
+*.swp
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Testing / Coverage
+.coverage
+*.cover
+htmlcov/
