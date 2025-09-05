@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Details - DStore</title>
+</head>
+<body>
+<h2>Customer Details</h2>
+
+<p><b>ID:</b> {{ customer.cust_id }}</p>
+<p><b>Name:</b> {{ customer.name }}</p>
+<p><b>Phone:</b> {{ customer.phone }}</p>
+
+<hr>
+
+<h3>Transactions</h3>
+
+{% if transactions %}
+  <table border="1" cellpadding="8" cellspacing="0">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Product</th>
+        <th>Quantity</th>
+        <th>Price (₹)</th>
+        <th>Total (₹)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for txn in transactions %}
+      <tr>
+        <td>{{ txn.date|date:"d M Y H:i" }}</td>
+        <td>{{ txn.product.name }}</td>
+        <td>{{ txn.quantity }}</td>
+        <td>{{ txn.product.price }}</td>
+        <td>{{ txn.total_price }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h3 style="margin-top:20px;">Grand Total: ₹{{ total_bill }}</h3>
+{% else %}
+  <p>No transactions found for this customer.</p>
+{% endif %}
+
+<hr>
+
+<a href="{% url 'add_transaction' customer.cust_id %}">➕ Add New Transaction</a>
+</br>    <a href="{% url 'search_customer' %}">🔙 Back to Search</a>
+</body>
+</html>
