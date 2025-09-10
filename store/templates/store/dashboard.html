@@ -3,13 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customer Dashboard</title>
+    <title>DStore Customer Dashboard</title>
     <style>
-        /* General body styling */
+        @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Pacifico&display=swap');
+
+        :root {
+            --primary-color: #006400; /* Dark Green */
+            --secondary-color: #f9fff9; /* Light, contrasting green background */
+            --accent-color: #32cd32; /* Lime Green */
+            --light-red: #ee3c0fff; /* Muted light red for total due */
+            --text-color: #333;
+            --light-text-color: #fff;
+            --card-background: #ffffff;
+            --box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
         body {
-            font-family: 'Google Sans', 'Roboto', sans-serif;
-            background-color: #f0f2f5;
-            color: #333;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
             margin: 0;
             padding: 2rem;
             display: flex;
@@ -17,124 +30,229 @@
             align-items: center;
         }
 
-        /* Container for the main content */
         .dashboard-container {
-            background: #ffffff;
+            background: var(--card-background);
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            max-width: 900px;
+            box-shadow: var(--box-shadow);
+            max-width: 1200px;
             width: 100%;
         }
 
-        /* Heading styles */
-        h2, h3 {
-            color: #004d99; /* Dark blue */
-            border-bottom: 2px solid #e6e6ff; /* Light blue underline */
-            padding-bottom: 0.5rem;
-            margin-top: 2rem;
+        .header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        .logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 1rem;
+            line-height: 1;
+        }
+
+        .logo:before {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            margin-right: 15px;
+            vertical-align: middle;
+            filter: drop-shadow(2px 2px 2px rgba(0, 0, 0, 0.1));
         }
 
         h2 {
+            font-family: 'Montserrat', sans-serif;
             text-align: center;
-            font-size: 2rem;
-            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
         }
 
-        /* Form styling */
-        form {
+        h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
+            margin-top: 0;
+            margin-bottom: 1rem;
+        }
+
+        .search-form-container {
+            width: 100%;
             display: flex;
             justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 2rem;
+            margin-bottom: 0;
         }
 
-        /* Input field styling */
+        .search-form {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+
         input[type="text"] {
             padding: 12px;
             border: 1px solid #ccc;
             border-radius: 8px;
-            flex: 1;
-            max-width: 300px;
+            flex-grow: 1;
             font-size: 16px;
         }
 
-        /* Button styling with animation */
         button {
             padding: 12px 24px;
-            background-color: #0066cc; /* Dark blue */
-            color: #ffffff;
+            background-color: var(--primary-color);
+            color: var(--light-text-color);
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s ease, transform 0.2s ease;
         }
+        button:hover { background-color: var(--accent-color); transform: translateY(-2px); }
+        button:active { transform: translateY(0); }
 
-        button:hover {
-            background-color: #004d99; /* Slightly darker blue on hover */
-            transform: translateY(-2px); /* A little lift animation */
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        /* Message styling */
         .message-box {
-            background-color: #ffe6e6; /* Light pink background */
-            color: #ff3333;
+            background-color: #fdf5e6;
+            color: #b8860b;
             padding: 15px;
             border-radius: 8px;
             text-align: center;
             margin-bottom: 1.5rem;
             font-weight: bold;
         }
-        
-        /* Customer details section */
-        .customer-details p {
-            background-color: #f9f9f9;
-            padding: 10px;
-            border-left: 4px solid #b3d9ff; /* Light blue accent */
-            border-radius: 4px;
-            margin: 8px 0;
-            line-height: 1.5;
+
+        .card {
+            background: var(--card-background);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            margin-bottom: 0.5rem;
+            height: 100%;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .customer-details-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
         
-        /* Transaction table styling */
+        .customer-details-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .customer-details-text {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            gap: 5px;
+        }
+
+        .total-amount {
+            background-color: var(--light-red); /* Light red */
+            color: var(--light-text-color);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 1.2rem;
+            font-weight: bold;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+        .total-amount strong {
+            color: var(--light-text-color);
+            font-size: 1.5rem;
+        }
+
+        .customer-details-card p {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            margin: 0;
+            padding: 0;
+            border: none;
+            background: none;
+        }
+        .customer-details-card strong {
+            color: var(--primary-color);
+        }
+        
+        .add-bill-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .add-bill-form label {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .add-bill-form input[type="number"] {
+            width: 100;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .add-bill-form input[type="number"]:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 8px rgba(50, 205, 50, 0.5);
+        }
+        .add-bill-form button {
+            background-color: var(--accent-color);
+        }
+        .add-bill-form button:hover {
+            background-color: #1a8b1a;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 1rem;
+            margin-top: 0;
             background-color: #fdfdfd;
             border-radius: 8px;
             overflow: hidden;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
         }
-
         th, td {
             text-align: left;
             padding: 12px 15px;
             border-bottom: 1px solid #ddd;
         }
-
         th {
-            background-color: #e6e6ff; /* Light blue header */
-            color: #004d99;
+            background-color: var(--primary-color);
+            color: var(--light-text-color);
             font-weight: bold;
             text-transform: uppercase;
         }
+        tr:nth-child(even) { background-color: #f9f9ff; }
+        tr:hover { background-color: #e6f7e6; }
 
-        tr:nth-child(even) {
-            background-color: #f9f9ff; /* Lighter blue for even rows */
-        }
-
-        tr:hover {
-            background-color: #d9e6ff; /* Hover effect with a light blue shade */
-        }
-
-        /* No transactions message */
         .no-transactions {
             color: #666;
             text-align: center;
@@ -146,55 +264,104 @@
 <body>
 
 <div class="dashboard-container">
+    <div class="header">
+        <div class="logo">DStore</div>
+        <div class="search-form-container">
+            <form id="searchForm" class="search-form">
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Enter Customer ID (e.g., CUST001)"
+                    required
+                    pattern="^CUST[0-9]{3,}$"
+                    title="Customer ID must be in the format CUST followed by at least 3 digits (e.g., CUST001)">
+                <button type="submit">Search</button>
+            </form>
+             <a href="{% url 'add_customer' %}" style="margin-left:10px;">
+        <button type="button" style="background-color: var(--accent-color);">Add New</button>
+    </a>
+        </div>
+    </div>
     <h2>Customer Dashboard</h2>
-
-    <form method="POST">
-        {% csrf_token %}
-        <input type="text" name="cust_id" placeholder="Enter Customer ID" required>
-        <button type="submit">Search</button>
-    </form>
 
     {% if message %}
         <p class="message-box">{{ message }}</p>
     {% endif %}
 
     {% if customer %}
-        <div class="customer-details">
-            <h3>Customer Details</h3>
-            <p><strong>ID:</strong> {{ customer.cust_id }}</p>
-            <p><strong>Name:</strong> {{ customer.name }}</p>
-            <p><strong>Email:</strong> {{ customer.email }}</p>
-            <p><strong>Mobile:</strong> {{ customer.mobile }}</p>
-            <p><strong>Address:</strong> {{ customer.address }}</p>
+        <div class="main-content">
+            <!-- Customer Details Card -->
+            <div class="card customer-details-card">
+                <h3>Customer Details</h3>
+                <div class="customer-details-row">
+                    <div class="customer-details-text">
+                        <p><strong>ID:</strong> {{ customer.cust_id }}</p>
+                        <p><strong>Name:</strong> {{ customer.name }}</p>
+                    </div>
+                    <div class="total-amount">
+                        Total Due: <strong style="color:#fff">₹{{ total_bill | default:"0.00" }}</strong>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Add Bill Card -->
+            <div class="card add-bill-card">
+                <h3>Add Bill</h3>
+                <form method="POST" action="{% url 'add_bill' customer.cust_id %}" class="add-bill-form">
+                    {% csrf_token %}
+                    <label for="amount">Amount (₹):</label>
+                    <input type="number" id="amount" name="amount" min="1" required>
+                    <button type="submit">Add Bill</button>
+                </form>
+            </div>
         </div>
 
-        <h3>Last 20 Transactions</h3>
-        {% if transactions %}
-            <table>
-                <thead>
-                    <tr>
-                        <th>Date</th>
-                        <th>Product</th>
-                        <th>Quantity</th>
-                        <th>Total Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for t in transactions %}
-                    <tr>
-                        <td>{{ t.date }}</td>
-                        <td>{{ t.product.name }}</td>
-                        <td>{{ t.quantity }}</td>
-                        <td>{{ t.total_price }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        {% else %}
-            <p class="no-transactions">No transactions found for this customer.</p>
-        {% endif %}
+        <!-- Transactions Table (Full Width) -->
+        <div class="card">
+            <h3>Last 20 Transactions</h3>
+            {% if transactions %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Total Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for t in transactions %}
+                            <tr>
+                                <td>{{ t.date|date:"d M Y H:i" }}</td>
+                                <td>{{ t.product.name }}</td>
+                                <td>{{ t.quantity }}</td>
+                                <td>₹{{ t.total_price }}</td>
+                                <td>
+                                <a href="{% url 'edit_transaction' t.id %}" style="color:blue; margin-right:10px;">Edit</a>
+                                <a href="{% url 'delete_transaction' t.id %}" style="color:red;">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="no-transactions">No transactions found for this customer.</p>
+            {% endif %}
+        </div>
     {% endif %}
 </div>
+
+<script>
+    const form = document.getElementById('searchForm');
+    form.addEventListener('submit', function(e){
+        e.preventDefault();
+        const custId = document.getElementById('searchInput').value.trim();
+        if(custId){
+            window.location.href = `/store/customer/${custId}/`;
+        }
+    });
+</script>
 
 </body>
 </html>

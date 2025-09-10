@@ -8,5 +8,11 @@ urlpatterns = [
     path("upload/", views.upload_customers, name="upload_customers"),  
     path("ajax-search/", views.ajax_search_customer, name="ajax_search_customer"),
     path("customers/", views.customer_list, name="customer_list"),
+    path("customer/add/", views.add_customer, name="add_customer"),
 
+    path('customer/<str:cust_id>/add-bill/', views.add_bill, name='add_bill'),
+    path("customer/<str:cust_id>/", views.customer_dashboard, name="customer_dashboard"),
+
+     path("transaction/<int:pk>/edit/", views.edit_transaction, name="edit_transaction"),
+    path("transaction/<int:pk>/delete/", views.delete_transaction, name="delete_transaction"),
 ]
