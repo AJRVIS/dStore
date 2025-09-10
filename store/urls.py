@@ -13,6 +13,11 @@ urlpatterns = [
     path('customer/<str:cust_id>/add-bill/', views.add_bill, name='add_bill'),
     path("customer/<str:cust_id>/", views.customer_dashboard, name="customer_dashboard"),
 
-     path("transaction/<int:pk>/edit/", views.edit_transaction, name="edit_transaction"),
+    path("transaction/<int:pk>/edit/", views.edit_transaction, name="edit_transaction"),
     path("transaction/<int:pk>/delete/", views.delete_transaction, name="delete_transaction"),
+    path("customer/<str:cust_id>/settlement/", views.settlement, name="settlement"),
+
+    path("customer/<str:cust_id>/edit/", views.edit_customer, name="edit_customer"),
+    path("customer/<str:cust_id>/delete/", views.delete_customer, name="delete_customer"),
+
 ]

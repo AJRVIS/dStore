@@ -1,6 +1,7 @@
+from datetime import timedelta
 import re
 from django.shortcuts import render, get_object_or_404, redirect
-from .models import Customer, Transaction, Product
+from .models import Customer, Settlement, Transaction, Product
 from django.urls import reverse
 from decimal import Decimal
 from django.utils import timezone
@@ -8,7 +9,7 @@ from django import forms
 
 import pandas as pd
 from django.http import JsonResponse
-from .forms import UploadFileForm  # (new file we’ll create)
+from .forms import SettlementForm, UploadFileForm  # (new file we’ll create)
 from django.db import transaction as db_transaction
 from django.db.models import Sum
 
@@ -19,6 +20,21 @@ def home(request):
     transactions = []
     total_due = 0
     message = None
+    
+     # --- Global summary values ---
+    today = timezone.now().date()
+    last_10_days = today - timedelta(days=10)
+
+ 
+    # Total Due (for all customers)
+    global_total_due = Transaction.objects.aggregate(Sum("total_price"))["total_price__sum"] or 0
+
+    # Today's Due (for all customers)
+    global_todays_due = Transaction.objects.filter(date__date=today).aggregate(Sum("total_price"))["total_price__sum"] or 0
+
+    # Last 10 Days Due (for all customers)
+    global_last_10_days_due = Transaction.objects.filter(date__date__gte=last_10_days).aggregate(Sum("total_price"))["total_price__sum"] or 0
+
 
     if request.method == "POST":
         cust_id = request.POST.get("cust_id", "").strip()
@@ -29,7 +45,9 @@ def home(request):
 
                 if customer:
                     transactions = Transaction.objects.filter(customer=customer).order_by("-date")[:20]  # last 20
-                    total_due = sum(t.total_price for t in customer.transactions.all())
+                    total_settlements = sum(s.amount_paid for s in customer.settlements.all())
+
+                    total_due = sum(t.total_price for t in customer.transactions.all()) - total_settlements
 
 
             except Customer.DoesNotExist:
@@ -41,7 +59,13 @@ def home(request):
         "customer": customer,
         "transactions": transactions,
         "total_due": total_due,  # pass grand total to template
-        "message": message
+        "message": message,
+        
+        "global_total_due": global_total_due,
+        "global_todays_due": global_todays_due,
+        "global_last_10_days_due": global_last_10_days_due,
+        
+        
     })
     
 def search_customer(request):
@@ -62,6 +86,9 @@ def search_customer(request):
             })
 
         transactions = Transaction.objects.filter(customer=customer).order_by("-date")
+        total_settlements = sum(s.amount_paid for s in customer.settlements.all())
+
+        total_due = sum(t.total_price for t in customer.transactions.all()) - total_settlements
 
         total_bill = Transaction.objects.filter(customer=customer).aggregate(
             total=Sum('total_price')
@@ -70,7 +97,7 @@ def search_customer(request):
         return render(request, "store/customer_detail.html", {
             "customer": customer,
             "transactions": transactions,
-            "total_bill": total_bill
+            "total_bill": total_due
         })
 
     return render(request, "store/search.html")
@@ -183,10 +210,14 @@ def customer_dashboard(request, cust_id):
     transactions = customer.transactions.order_by("-date")[:10]  # last 10 transactions
     total_bill = customer.transactions.aggregate(total=Sum('total_price'))['total'] or 0
 
+    total_settlements = sum(s.amount_paid for s in customer.settlements.all())
+
+    total_due = total_bill - total_settlements
+
     return render(request, "store/dashboard.html", {
         "customer": customer,
         "transactions": transactions,
-        "total_bill": total_bill
+        "total_bill": total_due
     })
 
 
@@ -248,3 +279,59 @@ def add_customer(request):
         form = CustomerForm()  # Create a blank form for GET requests
 
     return render(request, "store/add_customer.html", {"form": form})
+
+
+# Settlement 
+def settlement(request, cust_id):
+    customer = get_object_or_404(Customer, cust_id=cust_id)
+
+    # Calculate billed & paid
+    total_due = sum(t.total_price for t in customer.transactions.all())
+    total_paid = sum(s.amount_paid for s in customer.settlements.all())
+    outstanding_due = total_due - total_paid
+
+    if request.method == "POST":
+        amount = float(request.POST.get("amount", 0))
+
+        if amount > 0:
+            # Save settlement
+            Settlement.objects.create(
+                customer=customer,
+                amount_paid=amount,
+                date=timezone.now()
+            )
+
+            return redirect("customer_dashboard", cust_id=customer.cust_id)
+
+    # Recalculate in case of GET
+    total_due = sum(t.total_price for t in customer.transactions.all())
+    total_paid = sum(s.amount_paid for s in customer.settlements.all())
+    outstanding_due = total_due - total_paid
+
+    return render(request, "store/settlement.html", {
+        "customer": customer,
+        "outstanding_due": outstanding_due,
+        "total_bill": outstanding_due
+    })
+
+#Edit and Delete Customers fro Database
+
+def edit_customer(request, cust_id):
+    customer = get_object_or_404(Customer, cust_id=cust_id)
+    if request.method == "POST":
+        form = CustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            return redirect("customer_list")
+    else:
+        form = CustomerForm(instance=customer)
+    return render(request, "store/edit_customer.html", {"form": form, "customer": customer})
+
+
+def delete_customer(request, cust_id):
+    customer = get_object_or_404(Customer, cust_id=cust_id)
+    if request.method == "POST":
+        customer.delete()
+        return redirect("customer_list")
+    return render(request, "store/confirm_delete.html", {"customer": customer})
+

@@ -35,3 +35,12 @@ class Transaction(models.Model):
 
     def __str__(self):
         return f"{self.customer.name} bought {self.quantity} x {self.product.name}"
+
+class Settlement(models.Model):
+    customer = models.ForeignKey("Customer", on_delete=models.CASCADE, related_name="settlements")
+    amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
+    date = models.DateTimeField(default=timezone.now)
+    mode = models.CharField(max_length=20, default="Cash")  # later extend to UPI, Card, etc.
+
+    def __str__(self):
+        return f"{self.customer.name} paid ₹{self.amount_paid} on {self.date.strftime('%Y-%m-%d')}"
