@@ -50,7 +50,7 @@
         {% csrf_token %}
         <button type="submit">Yes, Delete</button>
     </form>
-    <a href="{% url 'customer_dashboard' transaction.customer.cust_id %}">Cancel</a>
+    <a href="{% url 'customer_dashboard' transaction.customer.dnumber %}">Cancel</a>
 </div>
 </body>
 </html>

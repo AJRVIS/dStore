@@ -64,7 +64,7 @@
         {{ form.as_p }}
         <button type="submit">Save Changes</button>
     </form>
-    <a href="{% url 'customer_dashboard' transaction.customer.cust_id %}">← Back to Dashboard</a>
+    <a href="{% url 'customer_dashboard' transaction.customer.dnumber %}">← Back to Dashboard</a>
 </div>
 </body>
 </html>

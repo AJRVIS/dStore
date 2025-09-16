@@ -3,17 +3,11 @@ from django.utils import timezone
 
 # Customer model
 class Customer(models.Model):
-    cust_id = models.CharField(max_length=20, unique=True)
-    name = models.CharField(max_length=100)
-    mobile = models.CharField(max_length=15, blank=True, null=True)
-    email = models.EmailField(blank=True, null=True)
-    address = models.TextField(blank=True, null=True)
-    total_due = models.DecimalField(max_digits=12, decimal_places=2, default=0)  # new field
+    dnumber = models.CharField(max_length=50, unique=True, null=True, blank=True)  # temporary fix
+    name = models.CharField(max_length=255)
 
     def __str__(self):
-        return f"{self.cust_id} - {self.name}"
-
-
+        return f"{self.dnumber} - {self.name}"
 
 # Product model
 class Product(models.Model):

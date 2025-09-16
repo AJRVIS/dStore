@@ -3,7 +3,8 @@ from .models import Customer, Product, Transaction
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ("cust_id", "name", "mobile", "email", "address")  # ✅ fixed
+    list_display = ("dnumber", "name")   # ✅ match new model
+    search_fields = ("dnumber", "name")  # optional: quick search
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):

@@ -369,14 +369,17 @@
         </div>
 
         <div class="search-form-container">
-            <form id="searchForm" class="search-form">
+    <form id="searchForm" class="search-form" method="POST" action="{% url 'home' %}">
+    {% csrf_token %}
                 <input
                     type="text"
                     id="searchInput"
-                    placeholder="Enter Customer ID (e.g., CUST001)"
+                    name="dnumber"
+                    placeholder="Enter Dairy Number"
                     required
-                    pattern="^CUST[0-9]{3,}$"
-                    title="Customer ID must be in the format CUST followed by at least 3 digits (e.g., CUST001)">
+                    value="{{ request.GET.dnumber|default:'' }}"
+
+                    >
                 <button type="submit">Search</button>
             </form>
              <a href="{% url 'add_customer' %}" style="margin-left:10px;">
@@ -387,8 +390,8 @@
     <h2>Customer Dashboard</h2>
 
     {% if message %}
-        <p class="message-box">{{ message }}</p>
-    {% endif %}
+<p class="message-box" style="color:red; margin-top:5px;">{{message}}</p>
+  {% endif %}
 
     {% if customer %}
         <div class="main-content">
@@ -396,11 +399,11 @@
                 <h3>Customer Details</h3>
                 <div class="customer-details-row">
                     <div class="customer-details-text">
-                        <p><strong>ID:</strong> {{ customer.cust_id }}</p>
+                        <p><strong>ID:</strong> {{ customer.dnumber }}</p>
                         <p><strong>Name:</strong> {{ customer.name }}</p>
                     </div>
                     <div class="total-amount">
-                    <a href="{% url 'settlement' customer.cust_id %}" style="color: #fff; text-decoration: none;">
+                    <a href="{% url 'settlement' customer.dnumber %}" style="color: #fff; text-decoration: none;">
                     Total Due: <strong style="color:#fff">₹{{ total_bill|default:"0.00" }}</strong>
                 </a>                    
             </div>
@@ -409,7 +412,7 @@
 
             <div class="card add-bill-card">
                 <h3>Add Bill</h3>
-                <form method="POST" action="{% url 'add_bill' customer.cust_id %}" class="add-bill-form">
+                <form method="POST" action="{% url 'add_bill' customer.dnumber %}" class="add-bill-form">
                     {% csrf_token %}
                     <label for="amount">Amount (₹):</label>
                     <input type="number" id="amount" name="amount" min="1" required>
@@ -452,7 +455,7 @@
         </div>
     {% endif %}
 </div>
-
+{% comment %} 
 <script>
     const form = document.getElementById('searchForm');
     form.addEventListener('submit', function(e){
@@ -462,7 +465,8 @@
             window.location.href = `/store/customer/${custId}/`;
         }
     });
-</script>
+</script> {% endcomment %}
+
 
 </body>
 </html>

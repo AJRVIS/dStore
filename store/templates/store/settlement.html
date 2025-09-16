@@ -246,7 +246,7 @@
             <h3>Customer Details</h3>
             <div class="customer-details-row">
                 <div class="customer-details-text">
-                    <p><strong>ID:</strong> {{ customer.cust_id }}</p>
+                    <p><strong>ID:</strong> {{ customer.dnumber }}</p>
                     <p><strong>Name:</strong> {{ customer.name }}</p>
                 </div>
                 <div class="outstanding-amount">
@@ -267,7 +267,7 @@
     </div>
 
     <div class="back-button-container">
-        <a href="{% url 'customer_dashboard' customer.cust_id %}" class="back-button">Back to Dashboard</a>
+        <a href="{% url 'customer_dashboard' customer.dnumber %}" class="back-button">Back to Dashboard</a>
     </div>
 </div>
 

@@ -6,7 +6,7 @@
 <body>
 <h2>Customer Details</h2>
 
-<p><b>ID:</b> {{ customer.cust_id }}</p>
+<p><b>ID:</b> {{ customer.dnumber }}</p>
 <p><b>Name:</b> {{ customer.name }}</p>
 <p><b>Phone:</b> {{ customer.phone }}</p>
 
@@ -45,7 +45,7 @@
 
 <hr>
 
-<a href="{% url 'add_transaction' customer.cust_id %}">➕ Add New Transaction</a>
+<a href="{% url 'add_transaction' customer.dnumber %}">➕ Add New Transaction</a>
 </br>    <a href="{% url 'search_customer' %}">🔙 Back to Search</a>
 </body>
 </html>
