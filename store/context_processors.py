@@ -20,6 +20,7 @@ def global_summary(request):
     global_total_due = total_transactions - total_settlements
     global_last_10_days_due = last_10_days_transactions - last_10_days_settlements
     global_todays_due = todays_transactions   # keep as-is (not reduced by settlements)
+    global_total_due = max(0, global_total_due)
 
     return {
         "global_total_due": global_total_due,

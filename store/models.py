@@ -26,6 +26,7 @@ class Transaction(models.Model):
     quantity = models.PositiveIntegerField()
     total_price = models.DecimalField(max_digits=10, decimal_places=2)
     date = models.DateTimeField(default=timezone.now)
+    is_settled = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.customer.name} bought {self.quantity} x {self.product.name}"

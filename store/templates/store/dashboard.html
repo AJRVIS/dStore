@@ -438,13 +438,26 @@
                         {% for t in transactions %}
                             <tr>
                                 <td>{{ t.date|date:"d M Y H:i" }}</td>
+
+                                 {% if t.type == "transaction" %}
+
                                 <td>{{ t.product.name }}</td>
                                 <td>{{ t.quantity }}</td>
                                 <td>₹{{ t.total_price }}</td>
                                 <td>
-                                    <a href="{% url 'edit_transaction' t.id %}" class="action-button edit-button">Edit</a>
-                                    <a href="{% url 'delete_transaction' t.id %}" class="action-button delete-button">Delete</a>
+                                    {% if t.is_settled %}
+                                        <span style="color: green; font-weight: bold;">Settled</span>
+                                    {% else %}
+                                        <span style="color: orange; font-weight: bold;">Billed</span>
+                                    {% endif %}
                                 </td>
+                                {% else %}
+                        <!-- settlement / payment row -->
+                        <td>Payment</td>
+                        <td>{{ t.mode|default:"Cash" }}</td>
+                        <td>₹{{ t.amount_paid }}</td>
+                        <td><span style="color: green; font-weight: bold;">Paid</span></td>
+                        {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>

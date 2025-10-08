@@ -37,9 +37,39 @@ def home(request):
         else:
             try:
                 customer = Customer.objects.get(dnumber=dnumber)
-                transactions = Transaction.objects.filter(customer=customer).order_by("-date")[:20]
-                total_settlements = sum(s.amount_paid for s in customer.settlements.all())
-                total_due = sum(t.total_price for t in customer.transactions.all()) - total_settlements
+
+                # --- combine transactions and settlements into a single list ---
+                tx_qs = Transaction.objects.filter(customer=customer)
+                st_qs = Settlement.objects.filter(customer=customer)
+
+                entries = []
+                for t in tx_qs:
+                    entries.append({
+                        "type": "transaction",
+                        "date": t.date,
+                        "product_name": t.product.name,
+                        "quantity": t.quantity,
+                        "total_price": t.total_price,
+                        "is_settled": t.is_settled,
+                        "obj": t,
+                    })
+                for s in st_qs:
+                    entries.append({
+                        "type": "settlement",
+                        "date": s.date,
+                        "amount_paid": s.amount_paid,
+                        "mode": s.mode,
+                        "obj": s,
+                    })
+
+                # sort by date desc and limit to last 20
+                entries.sort(key=lambda e: e["date"], reverse=True)
+                transactions = entries[:20]
+
+                total_settlements = sum(s.amount_paid for s in st_qs)
+                total_due = sum(t.total_price for t in tx_qs) - total_settlements
+                total_due = max(0, total_due)  # prevent negative dues
+
             except Customer.DoesNotExist:
                 message = f"Customer with DNumber '{dnumber}' not found."
 
@@ -47,6 +77,7 @@ def home(request):
         "customer": customer,
         "transactions": transactions,
         "total_bill": total_due,
+        "has_due": bool(total_due),
         "message": message,
         "global_total_due": global_total_due,
         "global_todays_due": global_todays_due,
@@ -179,19 +210,47 @@ def add_bill(request, dnumber):
 
     return redirect("customer_dashboard", dnumber=dnumber)
 
-
 def customer_dashboard(request, dnumber):
     customer = get_object_or_404(Customer, dnumber=dnumber)
-    transactions = customer.transactions.order_by("-date")[:10]
-    total_bill = customer.transactions.aggregate(total=Sum('total_price'))['total'] or 0
-    total_settlements = sum(s.amount_paid for s in customer.settlements.all())
+
+    tx_qs = Transaction.objects.filter(customer=customer)
+    st_qs = Settlement.objects.filter(customer=customer)
+
+    entries = []
+    for t in tx_qs:
+        entries.append({
+            "type": "transaction",
+            "date": t.date,
+            "product_name": t.product.name,
+            "quantity": t.quantity,
+            "total_price": t.total_price,
+            "is_settled": t.is_settled,
+            "obj": t,
+        })
+    for s in st_qs:
+        entries.append({
+            "type": "settlement",
+            "date": s.date,
+            "amount_paid": s.amount_paid,
+            "mode": s.mode,
+            "obj": s,
+        })
+
+    entries.sort(key=lambda e: e["date"], reverse=True)
+    transactions = entries[:20]
+
+    total_bill = tx_qs.aggregate(total=Sum('total_price'))['total'] or 0
+    total_settlements = sum(s.amount_paid for s in st_qs)
     total_due = total_bill - total_settlements
+    total_due = max(0, total_due)
 
     return render(request, "store/dashboard.html", {
         "customer": customer,
         "transactions": transactions,
-        "total_bill": total_due
+        "total_bill": total_due,
+        "has_due": bool(total_due),
     })
+
 
 
 def customer_list(request):
@@ -251,24 +310,49 @@ def add_customer(request):
 
 def settlement(request, dnumber):
     customer = get_object_or_404(Customer, dnumber=dnumber)
+
+    # Calculate total due before payment
     total_due = sum(t.total_price for t in customer.transactions.all())
     total_paid = sum(s.amount_paid for s in customer.settlements.all())
     outstanding_due = total_due - total_paid
 
     if request.method == "POST":
         amount = float(request.POST.get("amount", 0))
-        if amount > 0:
-            Settlement.objects.create(customer=customer, amount_paid=amount, date=timezone.now())
-            return redirect("customer_dashboard", dnumber=customer.dnumber)
+        if amount > 0 and outstanding_due > 0 and amount<=outstanding_due:
+            # Create a settlement record
+            Settlement.objects.create(
+                customer=customer,
+                amount_paid=amount,
+                date=timezone.now()
+            )
 
+            # Apply the payment to unsettled transactions
+            remaining = amount
+            for t in customer.transactions.filter(is_settled=False).order_by("date"):
+                if remaining <= 0:
+                    break
+                if remaining >= t.total_price:
+                    t.is_settled = True
+                    remaining -= t.total_price
+                else:
+                    # partial coverage — leave as not settled
+                    remaining = 0
+                t.save()
+
+            return redirect("customer_dashboard", dnumber=customer.dnumber)
+        else:
+            message = f"Amount cannot be greater than or equal to outstanding due (₹{outstanding_due:.2f})."
+            return redirect("settlement", dnumber=customer.dnumber)
+
+    # Recalculate after settlement for display
     total_due = sum(t.total_price for t in customer.transactions.all())
     total_paid = sum(s.amount_paid for s in customer.settlements.all())
     outstanding_due = total_due - total_paid
 
     return render(request, "store/settlement.html", {
         "customer": customer,
-        "outstanding_due": outstanding_due,
-        "total_bill": outstanding_due
+        "outstanding_due": max(0, outstanding_due),  # never negative
+        "total_bill": max(0, outstanding_due),
     })
 
 
