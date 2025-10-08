@@ -5,6 +5,7 @@ from django.utils import timezone
 class Customer(models.Model):
     dnumber = models.CharField(max_length=50, unique=True, null=True, blank=True)  # temporary fix
     name = models.CharField(max_length=255)
+    mobile = models.CharField(max_length=15, blank=True, null=True)  # New field
 
     def __str__(self):
         return f"{self.dnumber} - {self.name}"

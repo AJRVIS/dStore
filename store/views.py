@@ -14,6 +14,9 @@ from .forms import SettlementForm, UploadFileForm
 from django.db import transaction as db_transaction
 from django.db.models import Sum
 
+from store.ai_module.analytics import get_sales_summary
+from store.ai_module.predictor import predict_next_week_sales
+
 from store import models
 
 def home(request):
@@ -312,12 +315,14 @@ def settlement(request, dnumber):
     customer = get_object_or_404(Customer, dnumber=dnumber)
 
     # Calculate total due before payment
-    total_due = sum(t.total_price for t in customer.transactions.all())
-    total_paid = sum(s.amount_paid for s in customer.settlements.all())
+    total_due = sum(Decimal(t.total_price) for t in customer.transactions.all())
+    total_paid = sum(Decimal(s.amount_paid) for s in customer.settlements.all())
     outstanding_due = total_due - total_paid
 
     if request.method == "POST":
-        amount = float(request.POST.get("amount", 0))
+        amount_str = request.POST.get("amount", "0").strip()
+        amount = Decimal(amount_str) if amount_str else Decimal("0")       
+        
         if amount > 0 and outstanding_due > 0 and amount<=outstanding_due:
             # Create a settlement record
             Settlement.objects.create(
@@ -374,3 +379,12 @@ def delete_customer(request, dnumber):
         customer.delete()
         return redirect("customer_list")
     return render(request, "store/confirm_delete.html", {"customer": customer})
+
+def ai_insights(request):
+    summary = get_sales_summary()
+    prediction = predict_next_week_sales()
+    context = {
+        "summary": summary,
+        "prediction": prediction,
+    }
+    return render(request, "store/ai_insights.html", context)
