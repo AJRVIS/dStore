@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-z7$+^ms(rex+r=rfayssj_pw#v3c=*b=atm4)t!-4n&r4yw*5f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['https://dstore-g5emcefghqdcakdn.centralindia-01.azurewebsites.net/']
 
 
 # Application definition
@@ -48,7 +48,12 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
+
 ]
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 
 ROOT_URLCONF = 'dstore.urls'
 
