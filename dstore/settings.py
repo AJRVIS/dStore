@@ -30,7 +30,9 @@ ALLOWED_HOSTS = ['.azurewebsites.net', 'localhost', '127.0.0.1']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://dstore-g5emcefghqdcakdn.centralindia-01.azurewebsites.net',
+    'http://dstore-g5emcefghqdcakdn.centralindia-01.azurewebsites.net',
 ]
+
 
 CSRF_COOKIE_SECURE = True
 SESSION_COOKIE_SECURE = True
