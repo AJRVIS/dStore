@@ -26,7 +26,12 @@ SECRET_KEY = 'django-insecure-z7$+^ms(rex+r=rfayssj_pw#v3c=*b=atm4)t!-4n&r4yw*5f
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['dstore-g5emcefghqdcakdn.centralindia-01.azurewebsites.net','localhost','127.0.0.1']
+ALLOWED_HOSTS = ['.azurewebsites.net', 'localhost', '127.0.0.1']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://dstore-g5emcefghqdcakdn.centralindia-01.azurewebsites.net',
+]
+
 
 # Application definition
 
