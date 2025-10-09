@@ -32,6 +32,7 @@ CSRF_TRUSTED_ORIGINS = [
     'https://dstore-g5emcefghqdcakdn.centralindia-01.azurewebsites.net',
 ]
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Application definition
 
