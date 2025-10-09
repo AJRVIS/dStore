@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -23,9 +24,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-z7$+^ms(rex+r=rfayssj_pw#v3c=*b=atm4)t!-4n&r4yw*5f'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['dstore-g5emcefghqdcakdn.centralindia-01.azurewebsites.net']
+ALLOWED_HOSTS = ['dstore-g5emcefghqdcakdn.centralindia-01.azurewebsites.net','localhost','127.0.0.1']
 
 # Application definition
 
@@ -51,7 +52,7 @@ MIDDLEWARE = [
 
 ]
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
 ROOT_URLCONF = 'dstore.urls'
