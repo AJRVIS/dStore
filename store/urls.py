@@ -21,5 +21,6 @@ urlpatterns = [
     path("customer/<int:dnumber>/delete/", views.delete_customer, name="delete_customer"),
     
     path("ai-insights/", views.ai_insights, name="ai_insights"),
+    
 
 ]
